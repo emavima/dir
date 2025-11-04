@@ -9,7 +9,7 @@ if [ -z "$1" ]; then
   exit 1
 fi
 
-URL="$1"
+URL="http://2242.cmod.com/"
 
 # Find all .env files (in current directory and subdirectories)
 find . -type f -name ".env" | while read -r FILE; do
